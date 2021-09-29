@@ -5,12 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.fclarke.gameifyfitnessandtodo.R
-import com.fclarke.gameifyfitnessandtodo.network.ProjectInfo
+import com.fclarke.gameifyfitnessandtodo.network.ProjectsArray
 import kotlinx.android.synthetic.main.recycler_list_row.view.*
 
 class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
-    var listData = ArrayList<ProjectInfo>()
+    var listData = ArrayList<ProjectsArray>()
     lateinit var sync_token :String
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -33,7 +33,7 @@ class ListAdapter: RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         private val tvPublisher = view.tvPublisher
         private val tvDescription = view.tvDescription
 
-        fun bind(data : ProjectInfo){
+        fun bind(data : ProjectsArray){
             tvTitle.text = data.name
             tvPublisher.text = data.name
             tvDescription.text = data.id.toString()

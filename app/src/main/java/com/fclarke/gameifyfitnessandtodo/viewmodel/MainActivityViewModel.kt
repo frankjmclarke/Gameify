@@ -3,7 +3,7 @@ package com.fclarke.gameifyfitnessandtodo.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.fclarke.gameifyfitnessandtodo.MainActivity
-import com.fclarke.gameifyfitnessandtodo.network.ListModel
+import com.fclarke.gameifyfitnessandtodo.network.AllProjects
 import com.fclarke.gameifyfitnessandtodo.network.RetroInstance
 import com.fclarke.gameifyfitnessandtodo.network.TodoistService
 import io.reactivex.Observer
@@ -12,22 +12,22 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 
 class MainActivityViewModel: ViewModel() {
-    var list: MutableLiveData<ListModel> = MutableLiveData()
+    var list: MutableLiveData<AllProjects> = MutableLiveData()
 
-    fun getListObserver(): MutableLiveData<ListModel> {
+    fun getListObserver(): MutableLiveData<AllProjects> {
         return list
     }
 
     fun makeApiCall(sync_token: String, resource_types:String) {
         val retroInstance = RetroInstance.getRetroInstance().create(TodoistService::class.java)
-        retroInstance.getListFromApi(MainActivity.todoistAuth, sync_token, resource_types)
+        retroInstance.getAllProjects(MainActivity.todoistAuth, sync_token, resource_types)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(getListObserverRx())
     }
 
-    private fun getListObserverRx():Observer<ListModel> {
-        return object :Observer<ListModel>{
+    private fun getListObserverRx():Observer<AllProjects> {
+        return object :Observer<AllProjects>{
             override fun onComplete() {
                 //hide progress indicator .
             }
@@ -36,7 +36,7 @@ class MainActivityViewModel: ViewModel() {
                 list.postValue(null)
             }
 
-            override fun onNext(t: ListModel) {
+            override fun onNext(t: AllProjects) {
                 list.postValue(t)
             }
 

@@ -24,7 +24,8 @@ curl https://api.todoist.com/sync/v8/sync \
 */
 
 data class AllProjects(val projects: ArrayList<ProjectsArray>, val sync_token :String)
-data class ProjectsArray(val name:String, val inbox_project: Boolean, val id: Long)
+data class ProjectsArray(val name:String, val inbox_project: Boolean, val id: Long,
+                         val content:String, val description:String, val date_completed: String?, val is_deleted: Int, val priority: Int)
 /*
 curl https://api.todoist.com/sync/v8/projects/get_data \
 -H "Authorization: Bearer 0123456789abcdef0123456789abcdef01234567" \

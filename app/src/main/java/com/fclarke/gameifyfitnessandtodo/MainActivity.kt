@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import com.fclarke.gameifyfitnessandtodo.adapter.ListAdapter
+import com.fclarke.gameifyfitnessandtodo.business.Experience
+import com.fclarke.gameifyfitnessandtodo.business.Gold
 import com.fclarke.gameifyfitnessandtodo.local.Shared
 import com.fclarke.gameifyfitnessandtodo.viewmodel.MainActivityViewModel
 import java.time.LocalDateTime
@@ -39,9 +41,14 @@ class MainActivity : AppCompatActivity() {
 
         //we want to know how many todoist tasks have been completed since last time, or 200 days ago if no last time
         sharedPreferences = Shared(this)
-        var dt: String? = sharedPreferences?.getString("TODOIST_SINCE_DATE")
+        //var dt: String? = sharedPreferences?.getString("TODOIST_SINCE_DATE")
+        var dt: String? = "2021-09-29T20:16:09Z" //just for testing
         var ldt: LocalDateTime = LocalDateTime.now().minus(200, ChronoUnit.DAYS)
         dateTimeString = dt ?: ldt.toString()
+
+        var exp=Experience()
+        exp.earnings(sharedPreferences,1)
+
     }
 
     private fun initSearchBox() {
@@ -80,10 +87,10 @@ class MainActivity : AppCompatActivity() {
                 if (it.items != null) {
                     listAdapter.listData = it.items
                     listAdapter.notifyDataSetChanged()
+                    val gold = Gold()
+                    gold.earnings(sharedPreferences,it.items.size)
                 }
 
-                var ldt: String = LocalDateTime.now().toString()
-                sharedPreferences?.put("TODOIST_SINCE_DATE", ldt)
             } else {
                 Toast.makeText(this, "Error in fetching data", Toast.LENGTH_SHORT).show()
             }

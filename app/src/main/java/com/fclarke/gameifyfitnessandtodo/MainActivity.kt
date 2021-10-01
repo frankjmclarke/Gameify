@@ -1,8 +1,6 @@
 package com.fclarke.gameifyfitnessandtodo
-
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.content.res.Resources
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -14,17 +12,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import com.fclarke.gameifyfitnessandtodo.adapter.ListAdapter
+import com.fclarke.gameifyfitnessandtodo.local.Shared
 import com.fclarke.gameifyfitnessandtodo.viewmodel.MainActivityViewModel
+import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel:  MainActivityViewModel
+    private lateinit var viewModel: MainActivityViewModel
     private lateinit var listAdapter: ListAdapter
-
-
-    companion object {
-        var todoistAuth: String = ""
-    }
+    private lateinit var sharedPreferences: Shared
+    private lateinit var dateTimeString: String
+    private lateinit var todoistAuth: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +36,12 @@ class MainActivity : AppCompatActivity() {
         initRecyclerView()
         val value = ai.metaData["todoistKey"]
         todoistAuth = "Bearer " + value.toString()
+
+        //we want to know how many todoist tasks have been completed since last time, or 200 days ago if no last time
+        sharedPreferences = Shared(this)
+        var dt: String? = sharedPreferences?.getString("TODOIST_SINCE_DATE")
+        var ldt: LocalDateTime = LocalDateTime.now().minus(200, ChronoUnit.DAYS)
+        dateTimeString = dt ?: ldt.toString()
     }
 
     private fun initSearchBox() {
@@ -50,33 +55,39 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                loadAPIData("*","[\"projects\"]")//s.toString()
+                loadAPIData()//"*","[\"projects\"]"
+                //labels, projects,items, notes, sections, filters, reminders, locations, user, live_notifications,
+                //collaborators, user_settings, notification_settings, user_plan_limits, stats.
             }
         })
     }
 
-    private fun initRecyclerView(){
+    private fun initRecyclerView() {
         recyclerView.apply {
             layoutManager = LinearLayoutManager(this@MainActivity)
-            val decoration  = DividerItemDecoration(applicationContext, StaggeredGridLayoutManager.VERTICAL)
+            val decoration =
+                DividerItemDecoration(applicationContext, StaggeredGridLayoutManager.VERTICAL)
             addItemDecoration(decoration)
             listAdapter = ListAdapter()
-            adapter =listAdapter
+            adapter = listAdapter
         }
     }
 
-    fun loadAPIData(input: String, input2: String) {
+    fun loadAPIData() {
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         viewModel.getListObserver().observe(this, {
-            if(it != null) {
-                //update adapter...
-                listAdapter.listData = it.projects
-                listAdapter.notifyDataSetChanged()
-            }
-            else {
+            if (it != null) {
+                if (it.items != null) {
+                    listAdapter.listData = it.items
+                    listAdapter.notifyDataSetChanged()
+                }
+
+                var ldt: String = LocalDateTime.now().toString()
+                sharedPreferences?.put("TODOIST_SINCE_DATE", ldt)
+            } else {
                 Toast.makeText(this, "Error in fetching data", Toast.LENGTH_SHORT).show()
             }
         })
-        viewModel.makeApiCall(input, input2)//input
+        viewModel.makeApiCall(todoistAuth, dateTimeString)//input
     }
 }

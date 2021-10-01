@@ -1,4 +1,5 @@
 package com.fclarke.gameifyfitnessandtodo.network
+
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
@@ -16,12 +17,13 @@ object AddLoggingInterceptor {
             .build()
     }
 }
+
 class RetroInstance {
 
     companion object {
         private const val baseURL = "https://api.todoist.com/sync/v8/"
 
-        fun getRetroInstance() : Retrofit {
+        fun getRetroInstance(): Retrofit {
 
             return Retrofit.Builder()
                 .baseUrl(baseURL)

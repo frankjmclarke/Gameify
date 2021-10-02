@@ -1,7 +1,7 @@
 package com.fclarke.gameifyfitnessandtodo.network
 
 data class AllCompletedItems(val items: ArrayList<CompletedItem>)
-data class CompletedItem(val content: String)
+data class CompletedItem(var content: String)
 data class CompletedProject(val name: String)
 
 /*

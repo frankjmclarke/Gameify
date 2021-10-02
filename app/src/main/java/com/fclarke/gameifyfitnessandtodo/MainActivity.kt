@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -33,8 +35,9 @@ class MainActivity : AppCompatActivity() {
         val ai: ApplicationInfo = applicationContext.packageManager
             .getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
 
-        //Toast.makeText(applicationContext,todoistAuth,Toast.LENGTH_LONG).show()
-        initSearchBox()
+        //initSearchBox()
+        val txtGoldAmount = findViewById(R.id.gold_amount) as TextView
+        val txtExpAmount = findViewById(R.id.exp_amount) as TextView
         initRecyclerView()
         val value = ai.metaData["todoistKey"]
         todoistAuth = "Bearer " + value.toString()
@@ -46,13 +49,34 @@ class MainActivity : AppCompatActivity() {
         var ldt: LocalDateTime = LocalDateTime.now().minus(200, ChronoUnit.DAYS)
         dateTimeString = dt ?: ldt.toString()
 
+        val btn_click_me = findViewById(R.id.insert_item) as Button
+        btn_click_me.setOnClickListener {
+            Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
+            listAdapter.insertItem(btn_click_me)
+        }
+        val btn_remove = findViewById(R.id.remove_item) as Button
+        btn_remove.setOnClickListener {
+            Toast.makeText(this@MainActivity, "You remove me.", Toast.LENGTH_SHORT).show()
+            listAdapter.removeItem(btn_remove)
+        }
+        loadAPIData()
+
+        viewModel.getGold()
+            ?.observe(this) { s ->
+                txtGoldAmount.setText("Gold: " + java.lang.String.valueOf(s))
+            }
+        viewModel.getExp()
+            ?.observe(this) { s ->
+                txtExpAmount.setText("Exp: " + java.lang.String.valueOf(s))
+            }
         myChar = Hero(sharedPreferences)
         myChar.addExperience(1)
+        viewModel.setExp(myChar.exp.value)
 
     }
 
     private fun initSearchBox() {
-        inputName.addTextChangedListener(object : TextWatcher {
+        gold_amount.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
 
             }
@@ -81,20 +105,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun loadAPIData() {
+        //make the data observable, then call api
         viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
         viewModel.getListObserver().observe(this, {
             if (it != null) {
                 if (it.items != null) {
                     listAdapter.listData = it.items
                     listAdapter.notifyDataSetChanged()
-
-                    myChar.addGold(it.items.size)
+                    //myChar.addGold(it.items.size)
+                    viewModel.goldAmount.value=it.items.size//You have to use postValue(), when you are changing the value from a background thread.
                 }
 
             } else {
                 Toast.makeText(this, "Error in fetching data", Toast.LENGTH_SHORT).show()
             }
         })
+
         viewModel.makeApiCall(todoistAuth, dateTimeString)//input
     }
 }

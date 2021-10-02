@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import com.fclarke.gameifyfitnessandtodo.adapter.ListAdapter
+import com.fclarke.gameifyfitnessandtodo.business.Level
 import com.fclarke.gameifyfitnessandtodo.business.characters.Hero
 import com.fclarke.gameifyfitnessandtodo.local.Shared
 import com.fclarke.gameifyfitnessandtodo.viewmodel.MainActivityViewModel
@@ -66,8 +67,12 @@ class MainActivity : AppCompatActivity() {
                 txtGoldAmount.setText("Gold: " + java.lang.String.valueOf(s))
             }
         viewModel.getExp()
-            ?.observe(this) { s ->
-                txtExpAmount.setText("Exp: " + java.lang.String.valueOf(s))
+            ?.observe(this) { exp ->
+                val level =Level()
+                var expGood = exp ?: 0
+                var expNeededToLevelUp = level.exp2Level(expGood)+1
+                expNeededToLevelUp=level.level2Exp(expNeededToLevelUp)
+                txtExpAmount.setText("Exp: " + java.lang.String.valueOf(expGood)+"/"+expNeededToLevelUp.toString())
             }
         myChar = Hero(sharedPreferences)
         myChar.addExperience(1)

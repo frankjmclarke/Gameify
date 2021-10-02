@@ -12,8 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import com.fclarke.gameifyfitnessandtodo.adapter.ListAdapter
-import com.fclarke.gameifyfitnessandtodo.business.Experience
-import com.fclarke.gameifyfitnessandtodo.business.Gold
+import com.fclarke.gameifyfitnessandtodo.business.characters.Hero
 import com.fclarke.gameifyfitnessandtodo.local.Shared
 import com.fclarke.gameifyfitnessandtodo.viewmodel.MainActivityViewModel
 import java.time.LocalDateTime
@@ -26,6 +25,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: Shared
     private lateinit var dateTimeString: String
     private lateinit var todoistAuth: String
+    private lateinit var myChar : Hero
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,8 +46,8 @@ class MainActivity : AppCompatActivity() {
         var ldt: LocalDateTime = LocalDateTime.now().minus(200, ChronoUnit.DAYS)
         dateTimeString = dt ?: ldt.toString()
 
-        var exp=Experience()
-        exp.earnings(sharedPreferences,1)
+        myChar = Hero(sharedPreferences)
+        myChar.addExperience(1)
 
     }
 
@@ -87,8 +87,8 @@ class MainActivity : AppCompatActivity() {
                 if (it.items != null) {
                     listAdapter.listData = it.items
                     listAdapter.notifyDataSetChanged()
-                    val gold = Gold()
-                    gold.earnings(sharedPreferences,it.items.size)
+
+                    myChar.addGold(it.items.size)
                 }
 
             } else {

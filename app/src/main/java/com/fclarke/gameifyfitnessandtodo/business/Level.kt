@@ -3,6 +3,7 @@ package com.fclarke.gameifyfitnessandtodo.business
 import android.util.Log
 
 class Level {
+    val prefKey :String="LEVEL"
     var experience = 0
     var level = 0
 

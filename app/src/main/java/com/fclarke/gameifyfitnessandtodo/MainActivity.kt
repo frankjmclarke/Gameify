@@ -39,6 +39,9 @@ class MainActivity : AppCompatActivity() {
         //initSearchBox()
         val txtGoldAmount = findViewById(R.id.gold_amount) as TextView
         val txtExpAmount = findViewById(R.id.exp_amount) as TextView
+        val txtManaAmount = findViewById(R.id.mana_amount) as TextView
+        val txtStrengthAmount = findViewById(R.id.strength_amount) as TextView
+
         initRecyclerView()
         val value = ai.metaData["todoistKey"]
         todoistAuth = "Bearer " + value.toString()
@@ -74,9 +77,21 @@ class MainActivity : AppCompatActivity() {
                 expNeededToLevelUp=level.level2Exp(expNeededToLevelUp)
                 txtExpAmount.setText("Exp: " + java.lang.String.valueOf(expGood)+"/"+expNeededToLevelUp.toString())
             }
+        viewModel.getMana()
+            ?.observe(this) { mana ->
+                txtManaAmount.setText("Mana: " + java.lang.String.valueOf(mana))
+            }
+        viewModel.getStrength()
+            ?.observe(this) { strength ->
+                txtStrengthAmount.setText("Strength: " + java.lang.String.valueOf(strength))
+            }
+
         myChar = Hero(sharedPreferences)
         myChar.addExperience(1)
         viewModel.setExp(myChar.exp.value)
+        viewModel.setMana(3)
+        viewModel.setStrength(3)
+
 
     }
 
@@ -118,7 +133,7 @@ class MainActivity : AppCompatActivity() {
                     listAdapter.listData = it.items
                     listAdapter.notifyDataSetChanged()
                     //myChar.addGold(it.items.size)
-                    viewModel.goldAmount.value=it.items.size//You have to use postValue(), when you are changing the value from a background thread.
+                    viewModel.goldL.value=it.items.size//You have to use postValue(), when you are changing the value from a background thread.
                 }
 
             } else {

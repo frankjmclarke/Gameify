@@ -14,11 +14,16 @@ ViewModel classes are used to store the data even the configuration changes like
 To avoid these issues, it is recommended to store all UI data in the ViewModel instead of an activity.
  */
 class MainActivityViewModel : ViewModel() {
+    //https://jensklingenberg.de/learn-how-to-use-livedata/
     var list: MutableLiveData<AllCompletedItems> = MutableLiveData()
     var gold = 0
-    var goldAmount: MutableLiveData<Int> = MutableLiveData()
+    var goldL: MutableLiveData<Int> = MutableLiveData()
     private var exp = 0
     private var expL: MutableLiveData<Int> = MutableLiveData()
+    private var mana = 0
+    private var manaL: MutableLiveData<Int> = MutableLiveData()
+    private var strength = 0
+    private var strengthL: MutableLiveData<Int> = MutableLiveData()
 
     fun getListObserver(): MutableLiveData<AllCompletedItems> {
         return list //loadApiData() updates this and observes notifyDataSetChanged
@@ -26,14 +31,14 @@ class MainActivityViewModel : ViewModel() {
 
     fun addGold(num: Int) {
         gold += num
-        goldAmount.value = gold
+        goldL.value = gold
     }
 
     fun getGold(): LiveData<Int?>? {
-        if (goldAmount == null) {
-            goldAmount = MutableLiveData<Int>()
+        if (goldL == null) {
+            goldL = MutableLiveData<Int>()
         }
-        return goldAmount
+        return goldL
     }
 
     fun setExp(num: Int) {
@@ -48,8 +53,32 @@ class MainActivityViewModel : ViewModel() {
         return expL
     }
 
+    fun setStrength(num: Int) {
+        strength = num
+        strengthL.value = strength
+    }
+
+    fun getStrength(): LiveData<Int?>? {
+        if (strengthL == null) {
+            strengthL = MutableLiveData<Int>()
+        }
+        return strengthL
+    }
+
+    fun setMana(num: Int) {
+        mana = num
+        manaL.value = mana
+    }
+
+    fun getMana(): LiveData<Int?>? {
+        if (manaL == null) {
+            manaL = MutableLiveData<Int>()
+        }
+        return manaL
+    }
+
     fun getGoldObserver(): MutableLiveData<Int> {
-        return goldAmount //loadApiData() updates this and observes notifyDataSetChanged
+        return goldL //loadApiData() updates this and observes notifyDataSetChanged
     }
 
     fun makeApiCall(todoistAuth: String, dateTimeString: String) {

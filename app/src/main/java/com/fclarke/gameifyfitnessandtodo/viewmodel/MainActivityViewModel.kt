@@ -3,6 +3,7 @@ package com.fclarke.gameifyfitnessandtodo.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.fclarke.gameifyfitnessandtodo.business.Level
 import com.fclarke.gameifyfitnessandtodo.network.*
 import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,6 +25,12 @@ class MainActivityViewModel : ViewModel() {
     private var manaL: MutableLiveData<Int> = MutableLiveData()
     private var strength = 0
     private var strengthL: MutableLiveData<Int> = MutableLiveData()
+    private var level = 0
+    private var levelL: MutableLiveData<Int> = MutableLiveData()
+    private var classNum = 0
+    private var classNumL: MutableLiveData<Int> = MutableLiveData()
+    private var demonNum = 0
+    private var demonNumL: MutableLiveData<Int> = MutableLiveData()
 
     fun getListObserver(): MutableLiveData<AllCompletedItems> {
         return list //loadApiData() updates this and observes notifyDataSetChanged
@@ -42,8 +49,25 @@ class MainActivityViewModel : ViewModel() {
     }
 
     fun setExp(num: Int) {
+        val level = Level()
+        var l1 = level.exp2Level(exp)
         exp = num
         expL.value = exp
+        var l2 = level.exp2Level(exp)
+        if (l2 > l1) {
+            setLevel(l2)
+        }
+ 
+    }
+
+    private fun setLevel(num: Int) {//level is a calculated field
+        level = num
+        levelL.value = level
+    }
+
+    fun recalcLevel(): Int {
+        val level = Level()
+        return level.exp2Level(exp)
     }
 
     fun getExp(): LiveData<Int?>? {
@@ -77,6 +101,28 @@ class MainActivityViewModel : ViewModel() {
         return manaL
     }
 
+    fun setClassNum(num: Int) {
+        classNum = num
+        classNumL.value = classNum
+    }
+
+    fun getClassNum(): LiveData<Int?>? {
+        if (classNumL == null) {
+            classNumL = MutableLiveData<Int>()
+        }
+        return classNumL
+    }
+    fun setDemonNum(num: Int) {
+        demonNum = num
+        demonNumL.value = demonNum
+    }
+
+    fun getDemonNum(): LiveData<Int?>? {
+        if (demonNumL == null) {
+            demonNumL = MutableLiveData<Int>()
+        }
+        return demonNumL
+    }
     fun getGoldObserver(): MutableLiveData<Int> {
         return goldL //loadApiData() updates this and observes notifyDataSetChanged
     }

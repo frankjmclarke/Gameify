@@ -62,9 +62,9 @@ class ListAdapter() : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         private val theSize :Int = size
 
         fun bind(data: CompletedItem) {
-            tvTitle.text = data.content
+            tvTitle.text = theSize.toString()
             tvPublisher.text = data.content
-            tvPublisher.text = theSize.toString()
+           // tvPublisher.text = theSize.toString()
         }
 
     }

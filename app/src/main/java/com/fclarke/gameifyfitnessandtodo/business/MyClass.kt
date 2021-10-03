@@ -30,6 +30,16 @@ class MyClass(shared: Shared) {
         }
     }
 
+    fun toString(cls:Int) :String{
+        return when (cls) {
+            1 -> "Warrior"
+            2 -> "Mage"
+            3 -> "Healer"
+            4 -> "Rogue"
+            else -> "None"
+        }
+    }
+
     fun write(sharedPreferences: Shared) {
         when (myClass) {
             CLASS.WARRIOR -> sharedPreferences?.put(prefKey, 1)

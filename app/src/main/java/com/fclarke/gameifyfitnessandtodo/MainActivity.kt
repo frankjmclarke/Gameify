@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
@@ -15,6 +16,8 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
 import com.fclarke.gameifyfitnessandtodo.adapter.ListAdapter
 import com.fclarke.gameifyfitnessandtodo.business.Level
+import com.fclarke.gameifyfitnessandtodo.business.MyClass
+import com.fclarke.gameifyfitnessandtodo.business.attributes.DemonClass
 import com.fclarke.gameifyfitnessandtodo.business.characters.Hero
 import com.fclarke.gameifyfitnessandtodo.local.Shared
 import com.fclarke.gameifyfitnessandtodo.viewmodel.MainActivityViewModel
@@ -37,20 +40,32 @@ class MainActivity : AppCompatActivity() {
             .getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
 
         //initSearchBox()
+        sharedPreferences = Shared(this)
+        val ivDemon = findViewById(R.id.iv_demon) as ImageView
+        val demon = DemonClass(sharedPreferences)
+        //demon.value=1
+        demon.write()
+        demon.read()
+        ivDemon.setImageResource(demon.getImage())
+        val txtDemonName = findViewById(R.id.demon_name) as TextView
+        txtDemonName.text="Inner Demon: "+demon.getName()
+
         val txtGoldAmount = findViewById(R.id.gold_amount) as TextView
         val txtExpAmount = findViewById(R.id.exp_amount) as TextView
         val txtManaAmount = findViewById(R.id.mana_amount) as TextView
         val txtStrengthAmount = findViewById(R.id.strength_amount) as TextView
+        val txtLevelAmount = findViewById(R.id.level_amount) as TextView
+        val txtPlayerClass = findViewById(R.id.player_class) as TextView
 
         initRecyclerView()
         val value = ai.metaData["todoistKey"]
         todoistAuth = "Bearer " + value.toString()
 
         //we want to know how many todoist tasks have been completed since last time, or 200 days ago if no last time
-        sharedPreferences = Shared(this)
+
         //var dt: String? = sharedPreferences?.getString("TODOIST_SINCE_DATE")
-        var dt: String? = "2021-09-29T20:16:09Z" //just for testing
-        var ldt: LocalDateTime = LocalDateTime.now().minus(200, ChronoUnit.DAYS)
+        var dt: String? = "2021-08-01T20:16:09Z" //just for testing
+        var ldt: LocalDateTime = LocalDateTime.now().minus(1, ChronoUnit.DAYS)
         dateTimeString = dt ?: ldt.toString()
 
         val btn_click_me = findViewById(R.id.insert_item) as Button
@@ -66,8 +81,8 @@ class MainActivity : AppCompatActivity() {
         loadAPIData()
 
         viewModel.getGold()
-            ?.observe(this) { s ->
-                txtGoldAmount.setText("Gold: " + java.lang.String.valueOf(s))
+            ?.observe(this) { n ->
+                txtGoldAmount.setText("Gold: " + java.lang.String.valueOf(n))
             }
         viewModel.getExp()
             ?.observe(this) { exp ->
@@ -78,12 +93,21 @@ class MainActivity : AppCompatActivity() {
                 txtExpAmount.setText("Exp: " + java.lang.String.valueOf(expGood)+"/"+expNeededToLevelUp.toString())
             }
         viewModel.getMana()
-            ?.observe(this) { mana ->
-                txtManaAmount.setText("Mana: " + java.lang.String.valueOf(mana))
+            ?.observe(this) { n ->
+                txtManaAmount.setText("Mana: " + java.lang.String.valueOf(n))
             }
         viewModel.getStrength()
-            ?.observe(this) { strength ->
-                txtStrengthAmount.setText("Strength: " + java.lang.String.valueOf(strength))
+            ?.observe(this) { n ->
+                txtStrengthAmount.setText("Strength: " + java.lang.String.valueOf(n))
+            }
+        viewModel.getStrength()
+            ?.observe(this) { n ->
+                txtLevelAmount.setText("Level: " + java.lang.String.valueOf(n))
+            }
+        viewModel.getClassNum()
+            ?.observe(this) { n ->
+                val myClass = MyClass(sharedPreferences)
+                txtPlayerClass.setText("Class: " + n?.let { myClass.toString(it) })
             }
 
         myChar = Hero(sharedPreferences)
@@ -91,6 +115,8 @@ class MainActivity : AppCompatActivity() {
         viewModel.setExp(myChar.exp.value)
         viewModel.setMana(3)
         viewModel.setStrength(3)
+        viewModel.recalcLevel()
+        viewModel.setClassNum(1)
 
 
     }

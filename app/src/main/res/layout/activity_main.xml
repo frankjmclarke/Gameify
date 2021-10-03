@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <androidx.cardview.widget.CardView
         android:id="@+id/cardview"
         android:layout_width="match_parent"
@@ -17,7 +16,6 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-
 
             <ImageView
                 android:layout_width="206dp"
@@ -32,6 +30,18 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/player_class"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+
+                <TextView
+                    android:id="@+id/level_amount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+
+                <TextView
                     android:id="@+id/gold_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -42,19 +52,32 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView" />
+
                 <TextView
                     android:id="@+id/mana_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView" />
+
                 <TextView
                     android:id="@+id/strength_amount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView" />
+                <TextView
+                    android:id="@+id/demon_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TextView" />
+
+                <ImageView
+                    android:id="@+id/iv_demon"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_margin="6dp"
+                    app:srcCompat="@drawable/helmet" />
 
             </LinearLayout>
-
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 

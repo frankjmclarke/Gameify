@@ -19,6 +19,10 @@ open class Attribute(shared: Shared, prefKey: String) {
         }
     }
 
+    fun write() {
+        _shared?.put(_prefKey, value)
+    }
+
     fun read(): Int {
         return _shared.getInt(_prefKey) ?: 0
     }

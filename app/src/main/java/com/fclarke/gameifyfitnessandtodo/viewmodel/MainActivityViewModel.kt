@@ -16,7 +16,7 @@ To avoid these issues, it is recommended to store all UI data in the ViewModel i
  */
 class MainActivityViewModel : ViewModel() {
     //https://jensklingenberg.de/learn-how-to-use-livedata/
-    var list: MutableLiveData<AllCompletedItems> = MutableLiveData()
+    var list: MutableLiveData<Response> = MutableLiveData()
     var gold = 0
     var goldL: MutableLiveData<Int> = MutableLiveData()
     private var exp = 0
@@ -32,7 +32,7 @@ class MainActivityViewModel : ViewModel() {
     private var demonNum = 0
     private var demonNumL: MutableLiveData<Int> = MutableLiveData()
 
-    fun getListObserver(): MutableLiveData<AllCompletedItems> {
+    fun getListObserver(): MutableLiveData<Response> {
         return list //loadApiData() updates this and observes notifyDataSetChanged
     }
 
@@ -137,8 +137,8 @@ class MainActivityViewModel : ViewModel() {
 
     }
 
-    private fun getListObserverRx(): Observer<AllCompletedItems> {
-        return object : Observer<AllCompletedItems> {
+    private fun getListObserverRx(): Observer<Response> {
+        return object : Observer<Response> {
             override fun onComplete() {
                 //hide progress indicator .
             }
@@ -147,7 +147,7 @@ class MainActivityViewModel : ViewModel() {
                 list.postValue(null)
             }
 
-            override fun onNext(t: AllCompletedItems) {
+            override fun onNext(t: Response) {
                 list.postValue(t)
             }
 

@@ -20,6 +20,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".FightActivity"></activity>
         <meta-data
             android:name = "todoistKey"
             android:value = "${todoistKey}"/>

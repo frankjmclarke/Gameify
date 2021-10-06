@@ -13,7 +13,7 @@ interface TodoistService {
         @Header("Authorization") header: String,
         @Query("limit") limit: Int,
         @Query("since") since: String
-    ): Observable<AllCompletedItems>
+    ): Observable<Response>
     /*
        @GET("sync")
        fun getAllProjects(

@@ -1,51 +1,51 @@
 package com.fclarke.gameifyfitnessandtodo
-import android.content.Intent
+
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import kotlinx.android.synthetic.main.activity_main.*
-import com.fclarke.gameifyfitnessandtodo.adapter.ListAdapter
-import com.fclarke.gameifyfitnessandtodo.business.Level
-import com.fclarke.gameifyfitnessandtodo.business.MyClass
+import com.fclarke.gameifyfitnessandtodo.adapter.CardListAdapter
 import com.fclarke.gameifyfitnessandtodo.business.attributes.DemonClass
+import com.fclarke.gameifyfitnessandtodo.business.cards.CardItem
 import com.fclarke.gameifyfitnessandtodo.business.characters.Hero
 import com.fclarke.gameifyfitnessandtodo.local.Shared
-import com.fclarke.gameifyfitnessandtodo.network.ItemsItem
-import com.fclarke.gameifyfitnessandtodo.viewmodel.MainActivityViewModel
+import com.fclarke.gameifyfitnessandtodo.viewmodel.FightActivityViewModel
+import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fight_list_row.*
 import java.time.LocalDateTime
 import java.time.temporal.ChronoUnit
 
-class MainActivity : AppCompatActivity() {
 
-    private lateinit var viewModel: MainActivityViewModel
-    private lateinit var listAdapter: ListAdapter
+class FightActivity  : AppCompatActivity(){
+
+    private lateinit var viewModel: FightActivityViewModel
+    private lateinit var listAdapter: CardListAdapter
     private lateinit var sharedPreferences: Shared
     private lateinit var dateTimeString: String
-    private lateinit var todoistAuth: String
     private lateinit var myChar : Hero
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_fight)
         val ai: ApplicationInfo = applicationContext.packageManager
             .getApplicationInfo(applicationContext.packageName, PackageManager.GET_META_DATA)
 
         //initSearchBox()
         sharedPreferences = Shared(this)
-        iv_demon.setOnClickListener { launchActivity<FightActivity>() }
+        val ivDemon = findViewById(R.id.iv_demon) as ImageView
         val demon = DemonClass(sharedPreferences)
         //demon.value=1
         demon.write()
         demon.read()
-        iv_demon.setImageResource(demon.getImage())
+        ivDemon.setImageResource(demon.getImage())
         val txtDemonName = findViewById(R.id.demon_name) as TextView
         txtDemonName.text="Inner Demon: "+demon.getName()
 
@@ -57,8 +57,6 @@ class MainActivity : AppCompatActivity() {
         val txtPlayerClass = findViewById(R.id.player_class) as TextView
 
         initRecyclerView()
-        val value = ai.metaData["todoistKey"]
-        todoistAuth = "Bearer " + value.toString()
 
         //we want to know how many todoist tasks have been completed since last time, or 200 days ago if no last time
 
@@ -69,89 +67,84 @@ class MainActivity : AppCompatActivity() {
 
         val btn_click_me = findViewById(R.id.insert_item) as Button
         btn_click_me.setOnClickListener {
-            Toast.makeText(this@MainActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@FightActivity, "You clicked me.", Toast.LENGTH_SHORT).show()
             listAdapter.insertItem(btn_click_me)
         }
         val btn_remove = findViewById(R.id.remove_item) as Button
         btn_remove.setOnClickListener {
-            Toast.makeText(this@MainActivity, "You remove me.", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@FightActivity, "You remove me.", Toast.LENGTH_SHORT).show()
             listAdapter.removeItem(btn_remove)
         }
         loadAPIData()
 
-        viewModel.getGold()
+        viewModel.getDescription()
             ?.observe(this) { n ->
-                txtGoldAmount.setText("Gold: " + java.lang.String.valueOf(n))
+                tv_fight_title.setText(n)
             }
-        viewModel.getExp()
-            ?.observe(this) { exp ->
-                val level =Level()
-                var expGood = exp ?: 0
-                var expNeededToLevelUp = level.exp2Level(expGood)+1
-                expNeededToLevelUp=level.level2Exp(expNeededToLevelUp)
-                txtExpAmount.setText("Exp: " + java.lang.String.valueOf(expGood)+"/"+expNeededToLevelUp.toString())
-            }
-        viewModel.getMana()
+        viewModel.getIcon()
             ?.observe(this) { n ->
-                txtManaAmount.setText("Mana: " + java.lang.String.valueOf(n))
+                if (n != null) {
+                    fight_icon.setImageResource(n)
+                }
             }
-        viewModel.getStrength()
+        viewModel.getIcon1()
             ?.observe(this) { n ->
-                txtStrengthAmount.setText("Strength: " + java.lang.String.valueOf(n))
+                if (n != null) {
+                    image_view1.setImageResource(n)
+                }
             }
-        viewModel.getStrength()
+        viewModel.getIcon2()
             ?.observe(this) { n ->
-                txtLevelAmount.setText("Level: " + java.lang.String.valueOf(n))
+                if (n != null) {
+                    image_view2.setImageResource(n)
+                }
             }
-        viewModel.getClassNum()
+        viewModel.getIcon3()
             ?.observe(this) { n ->
-                val myClass = MyClass(sharedPreferences)
-                txtPlayerClass.setText("Class: " + n?.let { myClass.toString(it) })
+                if (n != null) {
+                    image_view3.setImageResource(n)
+                }
+            }
+        viewModel.getIcon4()
+            ?.observe(this) { n ->
+                if (n != null) {
+                    image_view4.setImageResource(n)
+                }
             }
 
         myChar = Hero(sharedPreferences)
-        myChar.addExperience(1)
-        viewModel.setExp(myChar.exp.value)
-        viewModel.setMana(3)
-        viewModel.setStrength(3)
-        viewModel.recalcLevel()
-        viewModel.setClassNum(1)
 
 
     }
 
     private fun initRecyclerView() {
         recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
+            layoutManager = LinearLayoutManager(this@FightActivity)
             val decoration =
                 DividerItemDecoration(applicationContext, StaggeredGridLayoutManager.VERTICAL)
             addItemDecoration(decoration)
-            listAdapter = ListAdapter()
+            listAdapter = CardListAdapter()
             adapter = listAdapter
         }
     }
 
     fun loadAPIData() {
         //make the data observable, then call api
-        viewModel = ViewModelProvider(this).get(MainActivityViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(FightActivityViewModel::class.java)
         viewModel.getListObserver().observe(this, {
             if (it != null) {
                 if (it.items != null) {
-                    listAdapter.listData = it.items as ArrayList<ItemsItem>
+                    listAdapter.listData = it.items as ArrayList<CardItem>
                     listAdapter.notifyDataSetChanged()
-                    //myChar.addGold(it.items.size)
-                    viewModel.goldL.value=it.items.size//You have to use postValue(), when you are changing the value from a background thread.
                 }
 
             } else {
+
                 Toast.makeText(this, "Error in fetching data", Toast.LENGTH_SHORT).show()
             }
         })
+        //        viewModel.makeApiCall(todoistAuth, dateTimeString)//input
 
-        viewModel.makeApiCall(todoistAuth, dateTimeString)//input
     }
-    private inline fun<reified T> launchActivity(){
-        val intent = Intent(this, T::class.java)
-        startActivity(intent)
-    }
+
 }

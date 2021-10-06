@@ -15,11 +15,11 @@ class DemonClass(shared: Shared) : Attribute(shared, prefKey = "DEMON_CLASS") {
     }
     fun getImage() :Int{
         return when (value) {
-            1 -> R.drawable.sharpsmile
-            2 -> R.drawable.checklist
-            3 -> R.drawable.sharpsmile
-            4 -> R.drawable.sharpsmile
-            else -> R.drawable.sharpsmile
+            1 -> R.drawable.ic_sharp_smile
+            2 -> R.drawable.ic_checklist
+            3 -> R.drawable.ic_sharp_smile
+            4 -> R.drawable.ic_sharp_smile
+            else -> R.drawable.ic_sharp_smile
         }
     }
 }

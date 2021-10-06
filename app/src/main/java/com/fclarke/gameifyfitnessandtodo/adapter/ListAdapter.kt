@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
 import com.fclarke.gameifyfitnessandtodo.R
-import com.fclarke.gameifyfitnessandtodo.network.CompletedItem
+import com.fclarke.gameifyfitnessandtodo.network.ItemsItem
 import kotlinx.android.synthetic.main.recycler_list_row.view.*
 import kotlin.random.Random
 
 class ListAdapter() : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
-    var listData = ArrayList<CompletedItem>() //loadAPIData updates this
+    var listData = ArrayList<ItemsItem>() //loadAPIData updates this
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater =
@@ -44,7 +44,7 @@ class ListAdapter() : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
 
     fun insertItem(view: View) {
         val index = Random.nextInt(8)
-        val newItem = CompletedItem("Hello")
+        val newItem = ItemsItem(3)
         listData.add(index, newItem)
         notifyItemInserted(index)
     }
@@ -61,7 +61,7 @@ class ListAdapter() : RecyclerView.Adapter<ListAdapter.MyViewHolder>() {
         private val tvPublisher = view.tv_description
         private val theSize :Int = size
 
-        fun bind(data: CompletedItem) {
+        fun bind(data: ItemsItem) {
             tvTitle.text = theSize.toString()
             tvPublisher.text = data.content
            // tvPublisher.text = theSize.toString()
